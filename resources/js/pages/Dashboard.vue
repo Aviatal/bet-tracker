@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import AppLogoIcon from '@/Components/AppLogoIcon.vue';
 import { createBet } from '@/routes';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
 
 const toast = useToast();
 const props = defineProps<{
