@@ -17,6 +17,24 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface Competitor {
+    id: number;
+    name: string;
+}
+export interface Discipline {
+    id: number;
+    name: string;
+}
+
+export interface Selection {
+    id: number;
+    name: string;
+}
+export interface EventType {
+    id: number;
+    name: string;
+}
+
 export type AppPageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
