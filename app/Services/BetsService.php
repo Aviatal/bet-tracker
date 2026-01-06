@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Bet;
+use App\Models\User;
 use App\Repositories\BetsRepository;
 use Illuminate\Http\Request;
+use Mail;
 
 class BetsService
 {
@@ -11,7 +14,9 @@ class BetsService
     public function storeBet(Request $request): \App\Models\Bet
     {
         $data = $this->validateStoreRequest($request);
-        return $this->betsRepository->createBet($data);
+        $bet = $this->betsRepository->createBet($data);
+        $this->sendBetToEmail($bet);
+        return $bet;
     }
     private function validateStoreRequest(Request $request) :array
     {
@@ -45,5 +50,10 @@ class BetsService
             'odds' => 'kurs',
         ]);
         return $request->all();
+    }
+
+    private function sendBetToEmail(Bet $bet): void
+    {
+        Mail::to(User::all())->send(new \App\Mail\BetCreated($bet));
     }
 }
