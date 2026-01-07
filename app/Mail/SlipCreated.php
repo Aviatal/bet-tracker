@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Bet;
+use App\Models\Slip;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
@@ -10,14 +10,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class BetCreated extends Mailable
+class SlipCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public readonly Bet $bet){}
+    public function __construct(public readonly Slip $slip){}
 
     /**
      * Get the message envelope.
@@ -26,7 +26,7 @@ class BetCreated extends Mailable
     {
         return new Envelope(
             from: new Address('postmaster@sandbox002cc7d1d7844d8bb29543754e76d477.mailgun.org', 'Mailgun Sandbox'),
-            subject: 'Bet Created',
+            subject: '🎉Nowy kupon!',
         );
     }
 
@@ -36,7 +36,7 @@ class BetCreated extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.bet-created',
+            view: 'mails.slip-created',
         );
     }
 
