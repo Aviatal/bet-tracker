@@ -14,6 +14,7 @@ class StatsRepository
             return [
                 'profit' => $profit?->getAttribute('profit') ?? 0,
                 'accuracy' => $accuracy ? (($accuracy->getAttribute('wonslips') / $accuracy->getAttribute('totalslipscount')) * 100) : 0,
+                'expert_pay' => $profit ? \Number::currency($profit->getAttribute('profit') * 0.15, in: 'PLN' ,locale: 'pl') : 0
             ];
         } catch (\Throwable $exception) {
             \Log::error('Error while getting stats:');

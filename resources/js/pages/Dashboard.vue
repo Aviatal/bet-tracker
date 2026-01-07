@@ -41,7 +41,7 @@ const filteredSlips = computed(() => {
     );
 });
 
-const stats = ref({ profit: 0, accuracy: 0 });
+const stats = ref({ profit: 0, accuracy: 0, expert_pay: 0});
 
 const getStats = () => {
     axios
@@ -119,7 +119,7 @@ const deleteSlip = (id: number) => {
             </Link>
         </header>
 
-        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
             <div
                 class="rounded-xl border border-gray-700 bg-gray-800 p-6 shadow-sm"
             >
@@ -143,6 +143,16 @@ const deleteSlip = (id: number) => {
                 </p>
                 <p class="mt-1 text-3xl font-black text-purple-400">
                     {{ stats.accuracy }}%
+                </p>
+            </div>
+            <div
+                class="rounded-xl border border-gray-700 bg-gray-800 p-6 shadow-sm"
+            >
+                <p class="text-sm font-medium text-gray-400">
+                    Gaża eksperta
+                </p>
+                <p class="mt-1 text-3xl font-black text-purple-400">
+                    {{ stats.expert_pay }}
                 </p>
             </div>
         </div>
