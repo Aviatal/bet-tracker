@@ -9,10 +9,12 @@ Route::get('/', function () {
 });
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
-    Route::get('dashboard', [\App\Http\Controllers\BetsController::class, 'index'])->name('dashboard');
-    Route::get('createBet', [\App\Http\Controllers\BetsController::class, 'createBet'])->name('createBet');
-    Route::post('storeBet', [\App\Http\Controllers\BetsController::class, 'storeBet'])->name('storeBet');
-    Route::patch('change-bet-status/{bet}', [\App\Http\Controllers\BetsController::class, 'changeBetStatus'])->name('changeBetStatus');
+    Route::get('dashboard', [\App\Http\Controllers\SlipsController::class, 'index'])->name('dashboard');
+    Route::get('createSlip', [\App\Http\Controllers\SlipsController::class, 'createSlip'])->name('createSlip');
+    Route::post('storeSlip', [\App\Http\Controllers\SlipsController::class, 'storeSlip'])->name('storeSlip');
+    Route::patch('change-slip-status/{slip}', [\App\Http\Controllers\SlipsController::class, 'changeSlipStatus'])->name('changeSlipStatus');
+    Route::patch('update-slip-stake/{slip}', [\App\Http\Controllers\SlipsController::class, 'updateSlipStake'])->name('updateSlipStake');
+    Route::delete('delete-slip/{slip}', [\App\Http\Controllers\SlipsController::class, 'deleteSlip'])->name('deleteSlip');
 
     Route::get('/get-competitors', [\App\Http\Controllers\CompetitorsController::class, 'getCompetitors'])->name('getCompetitors');
     Route::get('/get-disciplines', [\App\Http\Controllers\DisciplinesController::class, 'getDisciplines'])->name('getDisciplines');
