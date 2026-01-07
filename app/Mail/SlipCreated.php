@@ -25,7 +25,7 @@ class SlipCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('postmaster@sandbox002cc7d1d7844d8bb29543754e76d477.mailgun.org', 'Mailgun Sandbox'),
+            from: new Address('postmaster@sandbox002cc7d1d7844d8bb29543754e76d477.mailgun.org', 'Bet tracker'),
             subject: '🎉Nowy kupon!',
         );
     }
