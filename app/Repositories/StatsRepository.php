@@ -2,17 +2,23 @@
 
 namespace App\Repositories;
 
-use App\Models\Bet;
+use App\Models\Slip;
 
 class StatsRepository
 {
     public function all(): array
     {
-        $accuracy = Bet::select(\DB::raw('COUNT(id) as wonbets'), \DB::raw('(SELECT COUNT(id) FROM bets) AS totalbetscount'))->where('status', 'won')->first();
-        $profit = Bet::select(\DB::raw('ROUND(SUM((stake * odds) - stake), 2) as profit'))->where('status', 'won')->first();
-        return [
-            'profit' => $profit?->getAttribute('profit') ?? 0,
-            'accuracy' => $accuracy ? (($accuracy->getAttribute('wonbets') / $accuracy->getAttribute('totalbetscount')) * 100) : 0,
-        ];
+        try {
+            $accuracy = Slip::query()->select(\DB::raw('COUNT(id) as wonslips'), \DB::raw("(SELECT COUNT(id) FROM slips WHERE status != 'pending') AS totalslipscount"))->where('status', 'won')->first();
+            $profit = Slip::query()->select(\DB::raw('ROUND(SUM((stake * odds) - stake), 2) as profit'))->where('status', 'won')->first();
+            return [
+                'profit' => $profit?->getAttribute('profit') ?? 0,
+                'accuracy' => $accuracy ? (($accuracy->getAttribute('wonslips') / $accuracy->getAttribute('totalslipscount')) * 100) : 0,
+            ];
+        } catch (\Throwable $exception) {
+            \Log::error('Error while getting stats:');
+            \Log::error($exception);
+            return [];
+        }
     }
 }
