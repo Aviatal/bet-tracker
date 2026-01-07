@@ -78,7 +78,6 @@ class SlipsController extends Controller
             $this->slipsRepository->deleteSlip($slip);
             return Redirect::back();
         } catch (\Throwable $exception) {
-            dd($exception);
             return \Redirect::back()->withErrors(['error' => 'Wystąpił błąd podczas usuwania kuponu']);
         }
     }

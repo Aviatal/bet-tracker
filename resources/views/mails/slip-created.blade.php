@@ -24,7 +24,6 @@
 
         /* Sekcja finansowa */
         .summary { background-color: #1e293b; border: 2px solid #334155; border-radius: 8px; padding: 20px; margin-top: 20px; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
         .summary-label { color: #94a3b8; font-weight: bold; }
         .summary-value { font-size: 18px; font-weight: 800; }
 
