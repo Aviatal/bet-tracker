@@ -13,7 +13,34 @@
 
         /* Styl dla pojedynczego zdarzenia */
         .event-card { background-color: #0f172a; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #10b981; }
-        .match-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #38bdf8; }
+        .match-header { display: flex; align-items: center; margin-bottom: 10px; }
+        .match-title { font-size: 18px; font-weight: bold; color: #38bdf8; display: inline-block; vertical-align: middle; }
+
+        /* NOWE STYLE DLA LIVE/PRE */
+        .live-badge {
+            background-color: #ef4444;
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-left: 8px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .pre-badge {
+            background-color: #334155;
+            color: #94a3b8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-left: 8px;
+            display: inline-block;
+            vertical-align: middle;
+        }
 
         .details-grid { width: 100%; border-collapse: collapse; }
         .details-grid td { padding: 8px 0; border-bottom: 1px solid #334155; }
@@ -40,11 +67,22 @@
     <div class="content">
         @foreach($slip->bets as $bet)
             <div class="event-card">
-                <div class="match-title">
-                    {{ $bet->home->name }} vs {{ $bet->away->name }}
+                <div class="match-header">
+                    <span class="match-title">{{ $bet->home->name }} vs {{ $bet->away->name }}</span>
+                    @if($bet->is_live)
+                        <span class="live-badge">● LIVE</span>
+                    @else
+                        <span class="pre-badge">PRE</span>
+                    @endif
                 </div>
 
                 <table class="details-grid">
+                    <tr>
+                        <td class="label">Tryb zdarzenia</td>
+                        <td class="value">
+                            {{ $bet->is_live ? 'Zakład na żywo' : 'Przedmeczowy' }}
+                        </td>
+                    </tr>
                     <tr>
                         <td class="label">Dyscyplina</td>
                         <td class="value">{{ $bet->discipline->name }}</td>
