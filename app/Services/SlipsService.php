@@ -47,14 +47,15 @@ readonly class SlipsService
             'numeric' => 'Pole :attribute ma niepoprawny format.',
             'exists' => 'Pole :attribute ma wartość nieistniejącą w bazie danych.'
         ], [
-            'home_id' => 'gospodarz',
-            'away_id' => 'gość',
-            'discipline_id' => 'dyscyplina',
-            'event_type_id' => 'rodzaj zakładu',
-            'selection_id' => 'typ',
+            'events.*.home_id' => 'gospodarz',
+            'events.*.away_id' => 'gość',
+            'events.*.event_date' => 'data meczu',
+            'events.*.discipline_id' => 'dyscyplina',
+            'events.*.event_type_id' => 'rodzaj zakładu',
+            'events.*.selection_id' => 'typ',
+            'events.*.is_live' => 'typ zdarzenia',
             'stake' => 'stawka',
             'odds' => 'kurs',
-            'is_live' => 'typ zdarzenia',
         ]);
         return $request->all();
     }
