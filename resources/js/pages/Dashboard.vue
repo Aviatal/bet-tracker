@@ -166,7 +166,7 @@ const toggleSlipPlayed = (slip: Slip) => {
                                     : 'text-red-400',
                             ]"
                         >
-                            {{ stats.profit }}
+                            {{ stats.profit }} zł
                         </p>
                     </div>
                     <div class="text-right">
@@ -182,13 +182,20 @@ const toggleSlipPlayed = (slip: Slip) => {
                 <p
                     class="mb-2 text-xs font-black tracking-widest text-gray-500 uppercase"
                 >
-                    Wszystkie Pomysły (Symulacja)
+                    Wszystkie propozycje
                 </p>
                 <div class="flex items-end justify-between">
                     <div>
-                        <p class="text-sm text-gray-400">Teoretyczny Profit</p>
-                        <p class="text-2xl font-black text-gray-200">
-                            {{ stats.total_profit }}
+                        <p class="text-sm text-gray-400">Profit</p>
+                        <p
+                            :class="[
+                                'text-3xl font-black',
+                                stats.total_profit >= 0
+                                    ? 'text-emerald-400'
+                                    : 'text-red-400',
+                            ]"
+                        >
+                            {{ stats.total_profit }} zł
                         </p>
                     </div>
                     <div class="text-right">
@@ -207,7 +214,7 @@ const toggleSlipPlayed = (slip: Slip) => {
                     Gaża eksperta
                 </p>
                 <p class="text-3xl font-black text-purple-400">
-                    {{ stats.expert_pay }}
+                    {{ stats.expert_pay }} zł
                 </p>
             </div>
         </div>

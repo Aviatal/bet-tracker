@@ -31,13 +31,12 @@ class StatsRepository
 
             $profit = $profitData->profit ?? 0;
             $totalProfit = $totalProfitData->profit ?? 0;
-
             return [
-                'profit' => \Number::currency($profit, 'PLN', 'pl'),
-                'total_profit' => \Number::currency($totalProfit, 'PLN', 'pl'),
+                'profit' => $profit,
+                'total_profit' => $totalProfit,
                 'accuracy' => $accuracy,
                 'total_accuracy' => $totalAccuracy,
-                'expert_pay' => $profit ? \Number::currency($profit * 0.15, in: 'PLN' ,locale: 'pl') : 0
+                'expert_pay' => $profit ? round($profit * 0.15, 2) : 0
             ];
         } catch (\Throwable $exception) {
             \Log::error('Error while getting stats:');
