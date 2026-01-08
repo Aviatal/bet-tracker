@@ -9,12 +9,35 @@ class StatsRepository
     public function all(): array
     {
         try {
-            $accuracy = Slip::query()->select(\DB::raw('COUNT(id) as wonslips'), \DB::raw("(SELECT COUNT(id) FROM slips WHERE status != 'pending') AS totalslipscount"))->where('status', 'won')->first();
-            $profit = Slip::query()->select(\DB::raw('ROUND(SUM((stake * odds) - stake), 2) as profit'))->where('status', 'won')->first();
+            $wonPlayedCount = Slip::where('status', 'won')->where('played', true)->count();
+            $totalPlayedCount = Slip::where('status', '!=', 'pending')->where('played', true)->count();
+
+            $accuracy = $totalPlayedCount > 0 ? \Number::percentage( ($wonPlayedCount / $totalPlayedCount) * 100) : 0;
+            $totalWonCount = Slip::where('status', 'won')->count();
+            $totalSlipCount = Slip::where('status', '!=', 'pending')->count();
+
+            $totalAccuracy = $totalWonCount > 0 ? \Number::percentage(($totalWonCount / $totalSlipCount) * 100) : 0;
+
+            $profitData = Slip::query()
+                ->where('status', 'won')
+                ->where('played', true)
+                ->selectRaw('ROUND(SUM((stake * odds) - stake)::numeric, 2) as profit')
+                ->first();
+
+            $totalProfitData = Slip::query()
+                ->where('status', 'won')
+                ->selectRaw('ROUND(SUM((stake * odds) - stake)::numeric, 2) as profit')
+                ->first();
+
+            $profit = $profitData->profit ?? 0;
+            $totalProfit = $totalProfitData->profit ?? 0;
+
             return [
-                'profit' => $profit?->getAttribute('profit') ?? 0,
-                'accuracy' => $accuracy ? (($accuracy->getAttribute('wonslips') / $accuracy->getAttribute('totalslipscount')) * 100) : 0,
-                'expert_pay' => $profit ? \Number::currency($profit->getAttribute('profit') * 0.15, in: 'PLN' ,locale: 'pl') : 0
+                'profit' => \Number::currency($profit, 'PLN', 'pl'),
+                'total_profit' => \Number::currency($totalProfit, 'PLN', 'pl'),
+                'accuracy' => $accuracy,
+                'total_accuracy' => $totalAccuracy,
+                'expert_pay' => $profit ? \Number::currency($profit * 0.15, in: 'PLN' ,locale: 'pl') : 0
             ];
         } catch (\Throwable $exception) {
             \Log::error('Error while getting stats:');
