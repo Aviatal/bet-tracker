@@ -19,6 +19,7 @@ interface Slip {
     odds: number;
     stake: number;
     status: 'pending' | 'won' | 'lost';
+    played: boolean;
     bets: Bet[];
 }
 
@@ -41,7 +42,13 @@ const filteredSlips = computed(() => {
     );
 });
 
-const stats = ref({ profit: 0, accuracy: 0, expert_pay: 0});
+const stats = ref({
+    profit: 0,
+    total_profit: 0,
+    accuracy: 0,
+    total_accuracy: 0,
+    expert_pay: 0,
+});
 
 const getStats = () => {
     axios
@@ -93,12 +100,27 @@ const updateStake = (id: number) => {
     );
 };
 
-// NOWA FUNKCJA: Usuwanie kuponu
 const deleteSlip = (id: number) => {
     router.delete(`/delete-slip/${id}`, {
         onSuccess: () => toast.success('Kupon został usunięty'),
         onError: () => toast.error('Wystąpił błąd podczas usuwania'),
     });
+};
+
+const toggleSlipPlayed = (slip: Slip) => {
+    router.patch(
+        `/toggle-slip-played/${slip.id}`,
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () =>
+                toast.success(
+                    slip.played
+                        ? 'Oznaczono jako niezagrany'
+                        : 'Oznaczono jako zagrany',
+                ),
+        },
+    );
 };
 </script>
 
@@ -106,82 +128,121 @@ const deleteSlip = (id: number) => {
     <Head title="Moje Kupony" />
 
     <div class="min-h-screen bg-gray-900 p-6 text-white">
-        <header class="mb-8 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <AppLogoIcon class="h-10 w-10" />
-                <h1 class="text-2xl font-bold tracking-tight">Bet Tracker</h1>
-            </div>
-            <Link
-                :href="createSlip()"
-                class="rounded-lg bg-emerald-500 px-4 py-2 font-semibold shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-600"
+        <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div
+                class="rounded-xl border-2 border-emerald-500/30 bg-gray-800 p-6 shadow-lg shadow-emerald-500/5"
             >
-                + Dodaj Kupon
-            </Link>
-        </header>
+                <div class="mb-2 flex items-center justify-between">
+                    <p
+                        class="text-xs font-black tracking-widest text-emerald-500 uppercase"
+                    >
+                        Realny Portfel
+                    </p>
+                    <span
+                        class="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white"
+                        >LIVE</span
+                    >
+                </div>
+                <div class="flex items-end justify-between">
+                    <div>
+                        <p class="text-sm text-gray-400">Profit</p>
+                        <p
+                            :class="[
+                                'text-3xl font-black',
+                                stats.profit >= 0
+                                    ? 'text-emerald-400'
+                                    : 'text-red-400',
+                            ]"
+                        >
+                            {{ stats.profit }}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-400">Skuteczność</p>
+                        <p class="text-xl font-bold text-purple-400">
+                            {{ stats.accuracy }}
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div
-                class="rounded-xl border border-gray-700 bg-gray-800 p-6 shadow-sm"
-            >
-                <p class="text-sm font-medium text-gray-400">
-                    Całkowity Profit
-                </p>
+            <div class="rounded-xl border border-gray-700 bg-gray-800 p-6">
                 <p
-                    :class="[
-                        'mt-1 text-3xl font-black',
-                        stats.profit >= 0 ? 'text-emerald-400' : 'text-red-400',
-                    ]"
+                    class="mb-2 text-xs font-black tracking-widest text-gray-500 uppercase"
                 >
-                    {{ stats.profit }} zł
+                    Wszystkie Pomysły (Symulacja)
                 </p>
+                <div class="flex items-end justify-between">
+                    <div>
+                        <p class="text-sm text-gray-400">Teoretyczny Profit</p>
+                        <p class="text-2xl font-black text-gray-200">
+                            {{ stats.total_profit }}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-400">Skuteczność</p>
+                        <p class="text-xl font-bold text-gray-400">
+                            {{ stats.total_accuracy }}
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div
-                class="rounded-xl border border-gray-700 bg-gray-800 p-6 shadow-sm"
-            >
-                <p class="text-sm font-medium text-gray-400">
-                    Skuteczność Kuponów
-                </p>
-                <p class="mt-1 text-3xl font-black text-purple-400">
-                    {{ stats.accuracy }}%
-                </p>
-            </div>
-            <div
-                class="rounded-xl border border-gray-700 bg-gray-800 p-6 shadow-sm"
-            >
-                <p class="text-sm font-medium text-gray-400">
+
+            <div class="rounded-xl border border-gray-700 bg-gray-800 p-6">
+                <p
+                    class="mb-2 text-xs font-black tracking-widest text-purple-500 uppercase"
+                >
                     Gaża eksperta
                 </p>
-                <p class="mt-1 text-3xl font-black text-purple-400">
+                <p class="text-3xl font-black text-purple-400">
                     {{ stats.expert_pay }}
                 </p>
             </div>
-        </div>
-
-        <div class="mb-6">
-            <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Szukaj po nazwie drużyny..."
-                class="w-full rounded-xl border-gray-700 bg-gray-800 px-4 py-3 text-white transition focus:border-emerald-500 focus:ring-emerald-500"
-            />
         </div>
 
         <div class="space-y-6">
             <div
                 v-for="slip in filteredSlips"
                 :key="slip.id"
-                class="group/slip overflow-hidden rounded-2xl border border-gray-700 bg-gray-800 shadow-xl transition hover:border-gray-600"
+                :class="[
+                    'overflow-hidden rounded-2xl border shadow-xl transition',
+                    slip.played
+                        ? 'border-gray-700 bg-gray-800'
+                        : 'border-dashed border-gray-600 bg-gray-800/40 opacity-80',
+                ]"
             >
                 <div
                     class="bg-gray-750/50 flex flex-wrap items-center justify-between border-b border-gray-700 p-5"
                 >
                     <div class="flex items-center gap-4">
+                        <button
+                            @click="toggleSlipPlayed(slip)"
+                            :class="[
+                                'flex items-center gap-2 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase transition',
+                                slip.played
+                                    ? 'border border-emerald-500/40 bg-emerald-500/20 text-emerald-400'
+                                    : 'border border-gray-600 bg-gray-700 text-gray-400',
+                            ]"
+                        >
+                            <div
+                                :class="[
+                                    'h-2 w-2 rounded-full',
+                                    slip.played
+                                        ? 'animate-pulse bg-emerald-500'
+                                        : 'bg-gray-500',
+                                ]"
+                            ></div>
+                            {{ slip.played ? 'PLAYED' : 'NOT PLAYED' }}
+                        </button>
+
+                        <div class="h-8 w-px bg-gray-700"></div>
+
                         <div class="flex flex-col">
                             <span
                                 class="text-[10px] font-black tracking-widest text-gray-500 uppercase"
-                                >ID Kuponu</span
+                                >ID</span
                             >
-                            <span class="font-mono text-lg font-bold"
+                            <span class="font-mono text-sm font-bold"
                                 >#{{ slip.id }}</span
                             >
                         </div>
