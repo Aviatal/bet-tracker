@@ -224,7 +224,7 @@ const toggleSlipPlayed = (slip: Slip) => {
                 v-for="slip in filteredSlips"
                 :key="slip.id"
                 :class="[
-                    'overflow-hidden rounded-2xl border shadow-xl transition',
+                    'group/slip overflow-hidden rounded-2xl border shadow-xl transition',
                     slip.played
                         ? 'border-gray-700 bg-gray-800'
                         : 'border-dashed border-gray-600 bg-gray-800/40 opacity-80',
