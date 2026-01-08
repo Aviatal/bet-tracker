@@ -50,4 +50,9 @@ class SlipsRepository
     {
         return $slip->delete();
     }
+
+    public function updateSlipPlayed(Slip $slip, bool $played): bool
+    {
+        return $slip->update(['played' => $played]);
+    }
 }

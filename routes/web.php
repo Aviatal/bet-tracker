@@ -14,6 +14,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::post('storeSlip', [\App\Http\Controllers\SlipsController::class, 'storeSlip'])->name('storeSlip');
     Route::patch('change-slip-status/{slip}', [\App\Http\Controllers\SlipsController::class, 'changeSlipStatus'])->name('changeSlipStatus');
     Route::patch('update-slip-stake/{slip}', [\App\Http\Controllers\SlipsController::class, 'updateSlipStake'])->name('updateSlipStake');
+    Route::patch('toggle-slip-played/{slip}', [\App\Http\Controllers\SlipsController::class, 'toggleSlipPlayed'])->name('toggleSlipPlayed');
     Route::delete('delete-slip/{slip}', [\App\Http\Controllers\SlipsController::class, 'deleteSlip'])->name('deleteSlip');
 
     Route::get('/get-competitors', [\App\Http\Controllers\CompetitorsController::class, 'getCompetitors'])->name('getCompetitors');

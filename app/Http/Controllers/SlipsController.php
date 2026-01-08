@@ -81,4 +81,14 @@ class SlipsController extends Controller
             return \Redirect::back()->withErrors(['error' => 'Wystąpił błąd podczas usuwania kuponu']);
         }
     }
+
+    public function toggleSlipPlayed(Slip $slip): ?\Illuminate\Http\RedirectResponse
+    {
+        try {
+            $this->slipsRepository->updateSlipPlayed($slip, !$slip->getAttribute('played'));
+            return Redirect::back();
+        } catch (\Throwable $exception) {
+            return \Redirect::back()->withErrors(['error' => 'Wystąpił błąd podczas usuwania kuponu']);
+        }
+    }
 }
