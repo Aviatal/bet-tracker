@@ -12,6 +12,7 @@ interface Bet {
     away: { name: string };
     event_type: { name: string };
     selection: { name: string };
+    is_live: boolean;
 }
 
 interface Slip {
@@ -401,11 +402,26 @@ const toggleSlipPlayed = (slip: Slip) => {
                                 >{{ index + 1 }}.</span
                             >
                             <div>
-                                <p
-                                    class="text-sm font-bold text-gray-200 transition group-hover:text-white"
-                                >
-                                    {{ bet.home?.name }} – {{ bet.away?.name }}
-                                </p>
+                                <div class="flex items-center gap-2">
+                                    <p
+                                        class="text-sm font-bold text-gray-200 transition group-hover:text-white"
+                                    >
+                                        {{ bet.home?.name }} –
+                                        {{ bet.away?.name }}
+                                    </p>
+                                    <span
+                                        v-if="bet.is_live"
+                                        class="flex items-center gap-1 rounded border border-red-500/30 bg-red-500/5 px-1 text-[12px] font-black text-red-500 uppercase"
+                                    >
+                                        Live
+                                    </span>
+                                    <span
+                                        v-else
+                                        class="rounded border border-gray-700 bg-gray-800 px-1 text-[12px] font-black text-gray-500 uppercase"
+                                    >
+                                        Pre
+                                    </span>
+                                </div>
                                 <p
                                     class="text-[11px] font-medium text-gray-500 uppercase"
                                 >

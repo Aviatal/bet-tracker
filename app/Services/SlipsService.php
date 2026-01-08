@@ -37,6 +37,7 @@ readonly class SlipsService
             'events.*.discipline_id' => ['required', 'integer', 'exists:disciplines,id'],
             'events.*.event_type_id' => ['required', 'integer', 'exists:event_types,id'],
             'events.*.selection_id' => ['required', 'integer', 'exists:selections,id'],
+            'events.*.is_live' => ['required', 'boolean:'],
             'events.*.event_date' => ['required', 'date'],
             'stake' => ['required', 'numeric'],
             'odds' => ['required', 'numeric'],
@@ -53,6 +54,7 @@ readonly class SlipsService
             'selection_id' => 'typ',
             'stake' => 'stawka',
             'odds' => 'kurs',
+            'is_live' => 'typ zdarzenia',
         ]);
         return $request->all();
     }

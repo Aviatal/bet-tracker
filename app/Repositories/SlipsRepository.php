@@ -16,7 +16,8 @@ class SlipsRepository
             ]);
         foreach ($inputData['events'] as $event) {
             Bet::create([
-               'event_date' => $event['event_date'],
+                'is_live' => $event['is_live'],
+                'event_date' => $event['event_date'],
                 'home_id' => $event['home_id'],
                 'away_id' => $event['away_id'],
                 'event_type_id' => $event['event_type_id'],
