@@ -128,6 +128,18 @@ const toggleSlipPlayed = (slip: Slip) => {
     <Head title="Moje Kupony" />
 
     <div class="min-h-screen bg-gray-900 p-6 text-white">
+        <header class="mb-8 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <AppLogoIcon class="h-10 w-10" />
+                <h1 class="text-2xl font-bold tracking-tight">Bet Tracker</h1>
+            </div>
+            <Link
+                :href="createSlip()"
+                class="rounded-lg bg-emerald-500 px-4 py-2 font-semibold shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-600"
+            >
+                + Dodaj Kupon
+            </Link>
+        </header>
         <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div
                 class="rounded-xl border-2 border-emerald-500/30 bg-gray-800 p-6 shadow-lg shadow-emerald-500/5"
