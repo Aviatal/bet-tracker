@@ -91,4 +91,17 @@ class SlipsController extends Controller
             return \Redirect::back()->withErrors(['error' => 'Wystąpił błąd podczas usuwania kuponu']);
         }
     }
+
+    public function analyzeBetScreenshot(Request $request)
+    {
+        try {
+            return response()->json($this->slipsService->analyzeBetScreenshot($request));
+        } catch (ValidationException $exception) {
+            return \Redirect::back()->withErrors(['error' => $exception->getMessage()]);
+        } catch (\Throwable $exception) {
+            \Log::error('Error while analyzing screenshot:');
+            \Log::error($exception);
+            return \Redirect::back()->withErrors(['error' => 'Wystąpił błąd podczas analizowania kuponu']);
+        }
+    }
 }

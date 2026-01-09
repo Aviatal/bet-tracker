@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Competitor;
+use App\Models\EventType;
+use App\Models\Selection;
 use App\Models\Slip;
 use App\Models\User;
 use App\Repositories\SlipsRepository;
@@ -10,7 +13,7 @@ use Mail;
 
 readonly class SlipsService
 {
-    public function __construct(private SlipsRepository $slipsRepository){}
+    public function __construct(private SlipsRepository $slipsRepository, private OpenaiService $openaiService){}
     public function storeSlip(Request $request): \App\Models\Slip
     {
         $data = $this->validateStoreRequest($request);
@@ -63,5 +66,49 @@ readonly class SlipsService
     private function sendSlipToEmail(Slip $slip): void
     {
         Mail::to(User::all())->send(new \App\Mail\SlipCreated($slip));
+    }
+
+    public function analyzeBetScreenshot(Request $request): array
+    {
+        $request->validate([
+            'screenshot' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+        ], [
+            'required' => 'Pole :attribute jest wymagane.',
+            'image' => 'Pole :attribute musi być zdjęciem',
+            'mimes' => 'Zdjęcie musi mieć rozszerzenie jpg, png, jpeg, gif lub svg.',
+            'max' => 'Zdjęcie może mieć maksymalnie 2MB.',
+        ]);
+        $data = $this->openaiService->parseScreenshot($request->file('screenshot'));
+        return $this->formatResponse($data);
+    }
+
+    private function formatResponse(array $slipData): array
+    {
+        $responseData = ['stake' => $slipData['stake'] ?? 0, 'odds' => $slipData['odds'] ?? 0];
+        foreach ($slipData['bets']  ?? [] as &$bet) {
+            if (isset($bet['home'])) {
+                $home = Competitor::query()->where('name', $bet['home'])->firstOrCreate(['name' => $bet['home']]);
+                $bet['home'] = $home;
+            }
+            if (isset($bet['away'])) {
+                $away = Competitor::query()->where('name', $bet['away'])->firstOrCreate(['name' => $bet['away']]);
+                $bet['away'] = $away;
+            }
+            if (isset($bet['discipline'])) {
+                $discipline = EventType::query()->where('name', $bet['discipline'])->firstOrCreate(['name' => $bet['discipline']]);
+                $bet['discipline'] = $discipline;
+            }
+            if (isset($bet['event_type'])) {
+                $eventType = EventType::query()->where('name', $bet['event_type'])->firstOrCreate(['name' => $bet['event_type']]);
+                $bet['event_type'] = $eventType;
+            }
+            if (isset($bet['selection'])) {
+                $selection = Selection::query()->where('name', $bet['selection'])->firstOrCreate(['name' => $bet['selection']]);
+                $bet['selection'] = $selection;
+            }
+
+            $responseData['bets'][] = $bet;
+        }
+        return $responseData;
     }
 }

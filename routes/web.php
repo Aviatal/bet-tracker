@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -11,6 +9,7 @@ Route::get('/', function () {
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('dashboard', [\App\Http\Controllers\SlipsController::class, 'index'])->name('dashboard');
     Route::get('createSlip', [\App\Http\Controllers\SlipsController::class, 'createSlip'])->name('createSlip');
+    Route::post('/analyze-bet-screenshot', [\App\Http\Controllers\SlipsController::class, 'analyzeBetScreenshot'])->name('analyzeBetScreenshot');
     Route::post('storeSlip', [\App\Http\Controllers\SlipsController::class, 'storeSlip'])->name('storeSlip');
     Route::patch('change-slip-status/{slip}', [\App\Http\Controllers\SlipsController::class, 'changeSlipStatus'])->name('changeSlipStatus');
     Route::patch('update-slip-stake/{slip}', [\App\Http\Controllers\SlipsController::class, 'updateSlipStake'])->name('updateSlipStake');
