@@ -26,7 +26,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::post('discipline', [\App\Http\Controllers\DisciplinesController::class, 'storeDiscipline'])->name('storeDiscipline');
         Route::post('competitor', [\App\Http\Controllers\CompetitorsController::class, 'storeCompetitor'])->name('storeCompetitor');
         Route::post('eventType', [\App\Http\Controllers\EventTypesController::class, 'storeEventType'])->name('storeEventType');
-        Route::post('selection', [\App\Http\Controllers\SelectionsController::class, 'storeSelection'])->name('storeSelection');
+        Route::post('selection/{eventType}', [\App\Http\Controllers\SelectionsController::class, 'storeSelection'])->name('storeSelection');
     });
 });
 

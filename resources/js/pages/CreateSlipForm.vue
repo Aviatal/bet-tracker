@@ -19,7 +19,7 @@ const form = useForm({
             discipline: null,
             event_type: null,
             selection: null,
-        }
+        },
     ],
     odds: null,
     stake: null,
@@ -130,7 +130,7 @@ const analyzeScreenshot = async (file: File) => {
         }
         toast.success('Dane zostały uzupełnione automatycznie!');
     } catch (error) {
-        console.log(error)
+        console.log(error);
         toast.error('Nie udało się przeanalizować zdjęcia.');
     } finally {
         isAnalyzing.value = false;
@@ -394,6 +394,7 @@ const removeImage = () => {
                             item-value="id"
                             backend-name="name"
                             add-link="/addRecord/eventType"
+                            :multiple="false"
                             @item-added="handleEventTypeAdded"
                         />
                         <extendable-autocomplete
@@ -403,7 +404,11 @@ const removeImage = () => {
                             item-title="name"
                             item-value="id"
                             backend-name="name"
-                            add-link="/addRecord/selection"
+                            :add-link="'/addRecord/selection/' + event.event_type?.id"
+                            source="api"
+                            fetch-url="/get-selections"
+                            query-param-name="event_type_id"
+                            :query-param-value="event.event_type?.id"
                             @item-added="handleSelectionAdded"
                         />
                     </div>

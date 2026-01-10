@@ -11,8 +11,13 @@ class SelectionsRepository
         return Selection::all();
     }
 
-    public static function store(string $name): Selection
+    public function getByEvent(int $eventTypeId): \Illuminate\Database\Eloquent\Collection
     {
-        return Selection::firstOrCreate(['name' => ucfirst($name)]);
+        return Selection::where('event_type_id', $eventTypeId)->get();
+    }
+
+    public static function store(string $name, int $eventTypeId): Selection
+    {
+        return Selection::firstOrCreate(['name' => ucfirst($name), 'event_type_id' => $eventTypeId]);
     }
 }

@@ -15,6 +15,6 @@ class DisciplinesController extends Controller
 
     public function storeDiscipline(Request $request): \Illuminate\Http\JsonResponse
     {
-        return response()->json($this->disciplinesRepository->store($request->input('postData.name')));
+        return response()->json($this->disciplinesRepository->store($request->input('name')));
     }
 }

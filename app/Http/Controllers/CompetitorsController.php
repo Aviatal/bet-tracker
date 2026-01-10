@@ -14,7 +14,7 @@ class CompetitorsController extends Controller
     }
     public function storeCompetitor(Request $request): \Illuminate\Http\JsonResponse
     {
-        return response()->json($this->competitorsRepository->store($request->input('postData.name')));
+        return response()->json($this->competitorsRepository::store($request->input('name')));
 
     }
 }
