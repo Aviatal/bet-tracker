@@ -347,6 +347,7 @@ const removeImage = () => {
                             item-value="id"
                             backend-name="name"
                             add-link="/addRecord/competitor"
+                            :multiple="false"
                             @item-added="handleCompetitorAdded"
                         />
                         <extendable-autocomplete
@@ -357,6 +358,7 @@ const removeImage = () => {
                             item-value="id"
                             backend-name="name"
                             add-link="/addRecord/competitor"
+                            :multiple="false"
                             @item-added="handleCompetitorAdded"
                         />
                     </div>
@@ -370,6 +372,7 @@ const removeImage = () => {
                             item-value="id"
                             backend-name="name"
                             add-link="/addRecord/discipline"
+                            :multiple="false"
                             @item-added="handleDisciplineAdded"
                         />
                         <div>
@@ -404,10 +407,13 @@ const removeImage = () => {
                             item-title="name"
                             item-value="id"
                             backend-name="name"
-                            :add-link="'/addRecord/selection/' + event.event_type?.id"
+                            :add-link="
+                                '/addRecord/selection/' + event.event_type?.id
+                            "
                             source="api"
                             fetch-url="/get-selections"
                             query-param-name="event_type_id"
+                            :multiple="false"
                             :query-param-value="event.event_type?.id"
                             @item-added="handleSelectionAdded"
                         />

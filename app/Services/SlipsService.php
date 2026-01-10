@@ -25,11 +25,11 @@ readonly class SlipsService
     {
         $events = [];
         foreach ($request->input('events') as $event) {
-            $event['home_id'] = $event['home'][0]['id'];
-            $event['away_id'] = $event['away'][0]['id'];
-            $event['discipline_id'] = $event['discipline'][0]['id'];
-            $event['event_type_id'] = $event['event_type'][0]['id'];
-            $event['selection_id'] = $event['selection'][0]['id'];
+            $event['home_id'] = $event['home']['id'];
+            $event['away_id'] = $event['away']['id'];
+            $event['discipline_id'] = $event['discipline']['id'];
+            $event['event_type_id'] = $event['event_type']['id'];
+            $event['selection_id'] = $event['selection']['id'];
             unset($event['home'], $event['away'], $event['discipline'], $event['event_type'], $event['selection']);
             $events[] = $event;
         }
