@@ -13,6 +13,7 @@ interface Bet {
     event_type: { name: string };
     selection: { name: string };
     is_live: boolean;
+    event_date: string; // --- DODANO POLE DATY ---
 }
 
 interface Slip {
@@ -23,6 +24,9 @@ interface Slip {
     played: boolean;
     bets: Bet[];
 }
+
+// ... reszta logiki pozostaje bez zmian ...
+// (stats, getStats, changeSlipStatus, updateOdds itd.)
 
 const toast = useToast();
 const props = defineProps<{
@@ -146,6 +150,47 @@ const toggleSlipPlayed = (slip: Slip) => {
                 ),
         },
     );
+};
+
+const formatDate = (dateValue: any) => {
+    if (dateValue === null || dateValue === undefined || dateValue === '') {
+        return 'Brak daty';
+    }
+
+    let timestamp: number;
+
+    if (typeof dateValue === 'string' && /^\d+$/.test(dateValue)) {
+        timestamp = parseInt(dateValue);
+    } else if (typeof dateValue === 'number') {
+        timestamp = dateValue;
+    } else {
+        const d = new Date(dateValue);
+        if (isNaN(d.getTime())) return 'Błędna data';
+        return d.toLocaleString('pl-PL', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }
+
+    if (timestamp.toString().length === 10) {
+        timestamp *= 1000;
+    }
+
+    const finalDate = new Date(timestamp);
+
+    if (isNaN(finalDate.getTime()) || finalDate.getFullYear() <= 1970) {
+        return 'Brak daty';
+    }
+
+    return finalDate.toLocaleString('pl-PL', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        year: 'numeric',
+    });
 };
 </script>
 
@@ -575,11 +620,45 @@ const toggleSlipPlayed = (slip: Slip) => {
                                         Pre
                                     </span>
                                 </div>
-                                <p
-                                    class="text-[11px] font-medium text-gray-500 uppercase"
+                                <div
+                                    class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2"
                                 >
-                                    {{ bet.event_type?.name }}
-                                </p>
+                                    <div class="flex items-center gap-2">
+                                        <p
+                                            class="text-[11px] font-bold tracking-wide text-gray-500 uppercase"
+                                        >
+                                            {{ bet.event_type?.name }}
+                                        </p>
+                                    </div>
+
+                                    <span
+                                        class="hidden h-1 w-1 rounded-full bg-gray-700 sm:block"
+                                    ></span>
+
+                                    <div
+                                        class="flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 shadow-sm"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-3.5 w-3.5 text-emerald-400"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
+                                        </svg>
+                                        <p
+                                            class="text-[11px] font-black tracking-widest text-emerald-400 uppercase"
+                                        >
+                                            {{ formatDate(bet.event_date) }}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="text-right">
