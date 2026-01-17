@@ -56,4 +56,9 @@ class SlipsRepository
     {
         return $slip->update(['played' => $played]);
     }
+
+    public function updateSlipOdds(Slip $slip, float $input): bool
+    {
+        return $slip->update(['odds' => $input]);
+    }
 }

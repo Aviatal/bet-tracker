@@ -32,6 +32,8 @@ const props = defineProps<{
 const searchQuery = ref('');
 const editingStakeId = ref<number | null>(null);
 const editStakeValue = ref<number>(0);
+const editingOddsId = ref<number | null>(null);
+const editOddsValue = ref<number>(0);
 
 const filteredSlips = computed(() => {
     return props.slips?.filter((slip) =>
@@ -76,14 +78,21 @@ const changeSlipStatus = (id: number, status: string) => {
     );
 };
 
-// Funkcje do obsługi edycji stawki
 const startEditingStake = (slip: Slip) => {
     editingStakeId.value = slip.id;
     editStakeValue.value = slip.stake;
 };
+const startEditingOdds = (slip: Slip) => {
+    editingOddsId.value = slip.id;
+    editOddsValue.value = slip.odds;
+};
 
-const cancelEdit = () => {
-    editingStakeId.value = null;
+const cancelEdit = (field: string) => {
+    if (field === 'stake') {
+        editingStakeId.value = null;
+    } else if (field === 'odds') {
+        editingOddsId.value = null;
+    }
 };
 
 const updateStake = (id: number) => {
@@ -97,6 +106,21 @@ const updateStake = (id: number) => {
                 editingStakeId.value = null;
             },
             onError: () => toast.error('Błąd podczas aktualizacji stawki'),
+        },
+    );
+};
+
+const updateOdds = (id: number) => {
+    router.patch(
+        `/update-slip-odds/${id}`,
+        { odds: editOddsValue.value },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Kurs został zaktualizowany');
+                editingOddsId.value = null;
+            },
+            onError: () => toast.error('Błąd podczas aktualizacji kursu'),
         },
     );
 };
@@ -300,88 +324,217 @@ const toggleSlipPlayed = (slip: Slip) => {
                         </button>
                     </div>
 
-                    <div class="flex items-center gap-8">
-                        <div class="text-right">
+                    <div class="flex items-center gap-6 xl:gap-10">
+                        <div class="min-w-[90px] text-right">
                             <p
-                                class="text-[10px] font-bold text-gray-500 uppercase"
+                                class="mb-1.5 text-[10px] font-black tracking-widest text-gray-500 uppercase"
                             >
                                 Kurs
                             </p>
-                            <p class="text-lg font-black text-white">
-                                {{ slip.odds }}
-                            </p>
+                            <div
+                                class="relative flex h-[34px] items-center justify-end"
+                            >
+                                <Transition
+                                    mode="out-in"
+                                    enter-active-class="transition duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+                                    enter-from-class="opacity-0 translate-y-4 scale-75"
+                                    enter-to-class="opacity-100 translate-y-0 scale-100"
+                                    leave-active-class="transition duration-300 ease-in"
+                                    leave-from-class="opacity-100 scale-100"
+                                    leave-to-class="opacity-0 -translate-y-4 scale-75"
+                                >
+                                    <div
+                                        v-if="editingOddsId === slip.id"
+                                        key="edit-odds"
+                                        class="animate-pulse-subtle relative flex items-center rounded-xl border-2 border-emerald-500 bg-gray-900 p-1 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                                    >
+                                        <input
+                                            v-model="editOddsValue"
+                                            type="number"
+                                            step="0.01"
+                                            class="w-16 [appearance:textfield] border-none bg-transparent p-1 text-base font-black text-emerald-400 focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                            @keyup.enter="updateOdds(slip.id)"
+                                            @keyup.esc="cancelEdit('odds')"
+                                            autofocus
+                                        />
+                                        <div class="flex gap-1 pr-1">
+                                            <button
+                                                @click="updateOdds(slip.id)"
+                                                class="rounded-lg bg-emerald-500/10 p-1.5 text-emerald-500 transition-all hover:scale-110 hover:bg-emerald-500 hover:text-white active:scale-90"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                @click="cancelEdit('odds')"
+                                                class="rounded-lg bg-red-500/10 p-1.5 text-red-400 transition-all hover:scale-110 hover:bg-red-500 hover:text-white active:scale-90"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <p
+                                        v-else
+                                        key="view-odds"
+                                        @click="startEditingOdds(slip)"
+                                        class="group/item flex cursor-pointer items-center justify-end gap-2 text-xl font-black text-white transition-all hover:scale-110 hover:text-emerald-400"
+                                    >
+                                        {{ slip.odds }}
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4 -translate-x-2 text-emerald-500/50 opacity-0 transition-all group-hover/item:translate-x-0 group-hover/item:opacity-100"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                            />
+                                        </svg>
+                                    </p>
+                                </Transition>
+                            </div>
                         </div>
 
-                        <div class="min-w-[100px] text-right">
+                        <div class="min-w-[110px] text-right">
                             <p
-                                class="text-[10px] font-bold text-gray-500 uppercase"
+                                class="mb-1.5 text-[10px] font-black tracking-widest text-gray-500 uppercase"
                             >
                                 Stawka
                             </p>
                             <div
-                                v-if="editingStakeId === slip.id"
-                                class="mt-1 flex items-center gap-1"
+                                class="relative flex h-[34px] items-center justify-end"
                             >
-                                <input
-                                    v-model="editStakeValue"
-                                    type="number"
-                                    class="w-20 rounded border-gray-600 bg-gray-900 p-1 text-sm text-white focus:ring-emerald-500"
-                                    @keyup.enter="updateStake(slip.id)"
-                                    @keyup.esc="cancelEdit"
-                                    autofocus
-                                />
-                                <button
-                                    @click="updateStake(slip.id)"
-                                    class="text-emerald-500 hover:text-emerald-400"
+                                <Transition
+                                    mode="out-in"
+                                    enter-active-class="transition duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+                                    enter-from-class="opacity-0 translate-y-4 scale-75"
+                                    enter-to-class="opacity-100 translate-y-0 scale-100"
+                                    leave-active-class="transition duration-300 ease-in"
+                                    leave-from-class="opacity-100 scale-100"
+                                    leave-to-class="opacity-0 -translate-y-4 scale-75"
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="h-5 w-5"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
+                                    <div
+                                        v-if="editingStakeId === slip.id"
+                                        key="edit-stake"
+                                        class="animate-pulse-subtle relative flex items-center rounded-xl border-2 border-emerald-500 bg-gray-900 p-1 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
                                     >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd"
+                                        <input
+                                            v-model="editStakeValue"
+                                            type="number"
+                                            class="w-20 [appearance:textfield] border-none bg-transparent p-1 text-base font-black text-emerald-400 focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                            @keyup.enter="updateStake(slip.id)"
+                                            @keyup.esc="cancelEdit('stake')"
+                                            autofocus
                                         />
-                                    </svg>
-                                </button>
+                                        <div class="flex gap-1 pr-1">
+                                            <button
+                                                @click="updateStake(slip.id)"
+                                                class="rounded-lg bg-emerald-500/10 p-1.5 text-emerald-500 transition-all hover:scale-110 hover:bg-emerald-500 hover:text-white active:scale-90"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                @click="cancelEdit('stake')"
+                                                class="rounded-lg bg-red-500/10 p-1.5 text-red-400 transition-all hover:scale-110 hover:bg-red-500 hover:text-white active:scale-90"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <p
+                                        v-else
+                                        key="view-stake"
+                                        @click="startEditingStake(slip)"
+                                        class="group/item flex cursor-pointer items-center justify-end gap-1.5 text-xl font-black text-white transition-all hover:scale-110 hover:text-emerald-400"
+                                    >
+                                        {{ slip.stake }}
+                                        <span
+                                            class="ml-0.5 text-xs font-bold text-gray-500 uppercase"
+                                            >zł</span
+                                        >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4 -translate-x-2 text-emerald-500/50 opacity-0 transition-all group-hover/item:translate-x-0 group-hover/item:opacity-100"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                            />
+                                        </svg>
+                                    </p>
+                                </Transition>
                             </div>
-                            <p
-                                v-else
-                                @click="startEditingStake(slip)"
-                                class="flex cursor-pointer items-center justify-end gap-1 text-lg font-black text-white transition hover:text-emerald-400"
-                                title="Kliknij, aby edytować"
-                            >
-                                {{ slip.stake }} zł
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-3 w-3 text-gray-500"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                    />
-                                </svg>
-                            </p>
                         </div>
 
-                        <div class="min-w-[100px] text-right">
+                        <div class="min-w-[120px] text-right">
+                            <p
+                                class="mb-1.5 text-right text-[10px] font-black tracking-widest text-gray-500 uppercase"
+                            >
+                                Status
+                            </p>
                             <button
                                 @click="changeSlipStatus(slip.id, slip.status)"
                                 :class="{
-                                    'w-full rounded-lg px-3 py-2 text-xs font-black tracking-tighter uppercase transition': true,
-                                    'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20':
+                                    'h-[34px] w-full transform rounded-xl text-[10px] font-black tracking-widest uppercase shadow-lg transition-all duration-300 hover:scale-105 active:scale-95': true,
+                                    'bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-400':
                                         slip.status === 'won',
-                                    'bg-red-500 text-white shadow-lg shadow-red-500/20':
+                                    'bg-red-500 text-white shadow-red-500/20 hover:bg-red-400':
                                         slip.status === 'lost',
-                                    'bg-yellow-500 text-gray-900':
+                                    'border border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600':
                                         slip.status === 'pending',
                                 }"
                             >

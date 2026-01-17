@@ -72,6 +72,17 @@ class SlipsController extends Controller
         }
     }
 
+    public function updateSlipOdds(Request $request, Slip $slip): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            $request->validate(['odds' => 'required|numeric|min:0.01']);
+            $this->slipsRepository->updateSlipOdds($slip, $request->input('odds'));
+            return Redirect::back();
+        } catch (\Throwable $exception) {
+            return \Redirect::back()->withErrors(['error' => 'Wystąpił błąd podczas edycji kursu']);
+        }
+    }
+
     public function deleteSlip(Slip $slip): ?\Illuminate\Http\RedirectResponse
     {
         try {
